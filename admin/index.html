@@ -15,10 +15,8 @@
 <body>
   <div class="sider">
     <a href="#" class="logo"><img src="images/logo02.png" alt="logo"></a>
-    <div class="user_info">
-      <img src="images/2.jpg" alt="person">
-      <span>欢迎&nbsp;&nbsp;李思思</span>
-      <b>管理员</b>
+    <div class="user_info" id="user_info">
+
     </div>
     <div class="menu">
       <div class="level01 active">
@@ -80,8 +78,7 @@
     </form>
 
     <div class="user_center_link">
-      <a href="user.html" onclick="setMenu(3,0)" target="main_frame">个人中心</a>
-      <img src="images/2.jpg" alt="person">
+      <span id="user_center_link"></span>
       <a href="#"><i class="iconfont icon-tuichu"></i> 退出</a>
     </div>
   </div>
@@ -112,6 +109,20 @@
 
   <script src="js/jquery-1.12.4.min.js"></script>
   <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+  <script src="./js/template-web.js"></script>
+
+  <!-- 用户信息模板1 -->
+  <!-- {{data.userPic}} -->
+  <script type="text/html" id="user1Tpl">
+    <img src="images/2.jpg" alt="person">
+    <span>欢迎&nbsp;&nbsp;{{data.nickname}}</span>
+    <b>管理员</b>
+  </script>
+    
+  <script type="text/html" id="user2Tpl">
+    <a href="user.html" onclick="setMenu(3,0)" target="main_frame">{{data.nickname}}</a>
+    <img src="images/2.jpg" alt="person">
+  </script>
   <script>
     var $level01 = $('.level01');
     var $subli = $('.level02 li')
@@ -166,7 +177,21 @@
 
   <!-- 业务逻辑代码 -->
   <script>
-
+    //用户展示
+    $(function () {
+      $.ajax({
+      url: 'http://47.111.184.55:8888/api/v1/admin/user/info',
+      type: 'get',
+      success: function (data) {
+        // console.log(data);
+        var html1 = template('user1Tpl', data);
+        // console.log(html);
+        $('#user_info').html(html1);
+        var html2 = template('user2Tpl', data);
+        $('#user_center_link').html(html2);
+      }
+    })
+    })
   </script>
 </body>
 
