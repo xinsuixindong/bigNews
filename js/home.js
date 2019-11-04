@@ -26,9 +26,21 @@ $.ajax({
     type:'get',
     url:'http://47.111.184.55:8888/api/v1/index/attention',
     success:function(data){  
-        console.log(data);
+        // console.log(data);
         var html = template('focusTpl', {data : data.data});
         // console.log(html);  
 		$('#focusBox').html(html);
+    }
+})
+// 文章分类
+$.ajax({
+    type:'get',
+    url:'http://47.111.184.55:8888/api/v1/index/category?list=5',
+    success:function(data){  
+        console.log(data);
+        var html = template('classifyTpl', {data : data.data});
+        // console.log(html);  
+        $('#classify2').html(html);
+        $('#classify').html(html);
     }
 })
