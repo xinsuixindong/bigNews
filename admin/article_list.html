@@ -20,15 +20,11 @@
     <div class="container-fluid common_con">
       <div class="row opt_btns">
         <div class="col-xs-6">
-          <form class="form-inline">
-            <select id="selCategory" name="" class="form-control input-sm">
-              <option value="">所有分类</option>
-              <option>未分类</option>
-              <option>奇趣事</option>
-              <option>会生活</option>
-              <option>爱旅行</option>
+          <form class="form-inline" id="filterForm">
+            <select id="selCategory" name="type" class="form-control input-sm">
+              <!-- 分类列表模板 -->
             </select>
-            <select id="selStatus" name="" class="form-control input-sm">
+            <select id="selStatus" name="state" class="form-control input-sm">
               <option value="">所有状态</option>
               <option value="草稿">草稿</option>
               <option value="已发布">已发布</option>
@@ -53,13 +49,13 @@
           </tr>
         </thead>
         <tbody id="articleListBox">
-
+          <!-- 文章列表模板 -->
         </tbody>
       </table>
 
       <div class="row text-center">
         <ul class="pagination pagination-sm" id="paginationBox">
-         
+          <!-- 分页模板 -->
         </ul>
       </div>
 
@@ -87,6 +83,14 @@
     {{/each}}
   </script>
 
+  <!-- 分类列表模板 -->
+  <script type="text/html" id="classificationTpl">
+    <option value="">所有分类</option>
+    {{each data}}
+    <option value={{$value.id}}>{{$value.name}}</option>
+    {{/each}}
+  </script>
+
   <script>
     // 设置左侧菜单
     $('#release_btn').click(function () {
@@ -97,32 +101,84 @@
   <!-- 业务逻辑代码 -->
   <script>
     $(function () {
-      //渲染列表
-      $.ajax({
-        url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
-        type: 'get',
-        data: {
-          perpage: 8
-        },
-        success: function (data) {
-          var html = template('articleListTpl', { data: data.data.data })
-          // console.log(html);
-          $('#articleListBox').html(html);
-          $('#paginationBox').twbsPagination({
-            first: '首页',
-            prev: '上一页',
-            next: '下一页',
-            last: '尾页',
-            totalPages: data.data.totalPage,
-            visiblePages: data.data.totalCount,
-            onPageClick: function (event, page) {
-              $('#page-content').text('Page ' + page);
+     
+      function getData(myPage) {
+        $.ajax({
+          type: 'get',
+          url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
+          data: {
+            page: myPage, // 当前第几页
+            perpage: 5    // 每页展示条数
+          },
+          success: function (data) {
+            console.log(data)
+            var html = template('articleListTpl', { data: data.data.data })
+            // console.log(html);
+            $('#articleListBox').html(html);
+            var totalPages = data.data.totalPage
+            if (myTotalPage != totalPages) {
+              myTotalPage = totalPages
+              $pagination.twbsPagination('destroy')
+              $pagination.twbsPagination($.extend({}, defaultOpts, {
+                startPage: 1,
+                totalPages: totalPages
+              }))
             }
-          });
+          }
+        })
+      }
+      getData(1)
+
+      var $pagination = $('#paginationBox')
+      var myTotalPage = 10
+
+      var defaultOpts = {
+        totalPages: myTotalPage,
+        visiblePages: 7,
+        first: '首页',
+        last: '末页',
+        prev: '上一页',
+        next: '下一页',
+        onPageClick: function (event, page) {
+          getData(page)
+        }
+      }
+
+      $pagination.twbsPagination(defaultOpts);
+
+
+      $('#paginationBox').twbsPagination();
+
+
+      //渲染分类列表
+      $.ajax({
+        url: 'http://47.111.184.55:8888/api/v1/admin/category/list',
+        type: 'get',
+        success: function (data) {
+          // console.log(data.data);
+          var html = template('classificationTpl', { data: data.data });
+          // console.log(html);
+          $('#selCategory').html(html);
+          // console.log(html);
         }
       })
 
-      //
+      //筛选文章
+      $('#filterForm').on('submit', function () {
+        var formData = $(this).serialize();
+        // console.log(formData);
+        $.ajax({
+          type: 'get',
+          url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
+          data: formData,
+          success: function (data) {
+            var html = template('articleListTpl', { data: data.data.data });
+            $('#articleListBox').html(html);
+          }
+        })
+        return false;
+      })
+
     })
   </script>
 </body>
