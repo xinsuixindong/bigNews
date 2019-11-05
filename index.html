@@ -15,8 +15,8 @@
   <div class="header">
     <a href="#" class="logo fl"><img src="images/logo.png" alt="logo"></a>
     <div class="search_form fl">
-      <input type="text" class="search_txt" placeholder="黑洞照片">
-      <button class="search_btn"><i class="fa fa-search"></i></button>
+      <input type="text" class="search_txt" placeholder="黑洞照片" id="search_txt">
+      <button class="search_btn" id="search_btn"><i class="fa fa-search"></i></button>
     </div>
     <div class="link_info fr">
       <a href="#"><i class="fa fa-angle-right"></i>&nbsp;&nbsp;网站地图</a><br>
@@ -25,6 +25,7 @@
   </div>
 
   <div class="menu_con">
+<<<<<<< HEAD
     <div class="menu">
       <div class="menu_collapse fl">
         <a href="javascript:;" class="level_one"><i class="fa fa-list-ul"></i>全部分类</a>
@@ -40,32 +41,32 @@
         <li><a href="#">科技专题</a></li>
         <li><a href="#">财经专题</a></li>
       </ul>
+=======
+      <div class="menu">
+        <div class="menu_collapse fl">
+          <a href="javascript:;" class="level_one"><i class="fa fa-list-ul"></i>全部分类</a>
+          <ul class="level_two" id="classify">
+            <li class="up"></li>
+            
+          </ul>
+        </div>
+        <ul class="left_menu fl" id="classify2">
+          
+        </ul>
+        <ul class="right_menu fr">
+          <li><a href="#">科技专题</a></li>
+          <li><a href="#">财经专题</a></li>
+        </ul>
+      </div>
+>>>>>>> 3d0ed1d93aee0e2276fd0696426a8e5e29b4dd64
     </div>
-  </div>
+  
 
   <div class="main_con clearfix">
     <div class="left_con">
-      <ul class="focus_list">
-        <li class="first">
-          <a href="#"><img src="images/pic01.jpg" alt=""></a>
-          <p>图片说明</p>
-        </li>
-        <li>
-          <a href="#"><img src="images/pic02.jpg" alt=""></a>
-          <p>图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明图片说明</p>
-        </li>
-        <li>
-          <a href="#"><img src="images/pic03.jpg" alt=""></a>
-          <p>图片说明</p>
-        </li>
-        <li>
-          <a href="#"><img src="images/pic05.jpg" alt=""></a>
-          <p>图片说明</p>
-        </li>
-        <li>
-          <a href="#"><img src="images/pic06.jpg" alt=""></a>
-          <p>图片说明</p>
-        </li>
+      <ul class="focus_list" id="focus_list">
+        
+        
       </ul>
 
       <div class="common_title">
@@ -171,6 +172,7 @@
 
   <script src="./js/jquery-1.12.4.min.js"></script>
   <script src="./js/template-web.js"></script>
+<<<<<<< HEAD
   <script src="./js/home.js"></script>
 
   <!-- 热门排行模板 -->
@@ -205,6 +207,28 @@
     {{each data.slice(0,5)}}
       <li><a href="#">{{$value.name}}</a></li>
     {{/each}}
+=======
+  <script src="index.js"></script>
+  //文章分类
+  <script type="text/html" id="classifyTpl">
+    {{each data.slice(0,5)}}
+      <li><a href="#">{{$value.name}}</a></li>
+    {{/each}}
+  </script>
+  //热点图
+  <script type="text/html" id="photoTpl">
+    {{each}}
+    <li>
+          <a href="javascript:;"><img src="{{$cover == null ? 'images/pic01.jpg' : '$cover'}}" ></a>
+          <p>图片说明</p>
+        </li>
+    {{/each}}
+  </script>
+
+  <!-- index 代码 -->
+
+  <script>
+>>>>>>> 3d0ed1d93aee0e2276fd0696426a8e5e29b4dd64
   </script>
 </body>
 
