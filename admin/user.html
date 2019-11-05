@@ -17,63 +17,103 @@
     <div class="common_title">
       用户信息修改
     </div>
-    <div class="container-fluid common_con">
-      <form class="form-horizontal article_form">
-        <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
-          <div class="col-sm-4">
-            <input type="text" name="username" class="form-control username" id="inputEmail3" value="李思思">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
-          <div class="col-sm-4">
-            <input type="text" name="nickname" class="form-control nickname" id="inputEmail3" value="思思">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
-          <div class="col-sm-4">
-            <input type="text" name="email" class="form-control email" id="inputEmail3" value="lisisi@126.com">
-          </div>
-        </div>
+    <div class="container-fluid common_con" id="tbody">
 
-        <div class="form-group">
-          <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
-          <div class="col-sm-10">
-            <img src="images/2.jpg" alt="" class="user_pic">
-            <input style="display: none" name="userPic" type="file" id="exampleInputFile">
-            <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
-            <br>
-            <label for="exampleInputFile">
-              <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
-          <div class="col-sm-4">
-            <input type="password" name="password" class="form-control password" id="inputEmail3" value="12345678">
-          </div>
-        </div>
-
-
-        <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-success btn-edit">修改</button>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
 
-
   <script src="js/jquery-1.12.4.min.js"></script>
-
+  <script src="js/template-web.js"></script>
+  <!-- 用户信息模板渲染 -->
+  <script type="text/html" id="userTPl">
+    <form class="form-horizontal" id="article_form" name="article_form">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
+        <div class="col-sm-4">
+          <input type="text" name="username" class="form-control username"  value="{{data.username}}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
+        <div class="col-sm-4">
+          <input type="text" name="nickname" class="form-control nickname"  value="{{data.nickname}}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
+        <div class="col-sm-4">
+          <input type="text" name="email" class="form-control email"  value="{{data.email}}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
+        <div class="col-sm-10">
+          <img src="{{data.userPic.replace('http://172.16.19.30:8888','http://47.111.184.55:8888')}}" alt="" class="user_pic" id="imgbox">
+          <input style="display: none" type="file" id="exampleInputFile" class="int" name="userPic">
+          <!-- 数据库图片name属性为userPic -->
+         <input type="hidden"  id="exampleHiddle" name="user_pic">
+         <!-- 本地编辑发送的图片name属性为user_pic -->
+          <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
+          <br>
+          <label for="exampleInputFile">
+            <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
+        <div class="col-sm-4">
+          <input type="password" name="password" class="form-control password"  value="{{data.password}}">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-success btn-edit" id="edit">修改</button>
+        </div>
+      </div>
+    </form>
+  </script>
+  <!-- 个人信息模板渲染 -->
+  <script type="text/html"></script>
   <!-- 业务逻辑代码 -->
   <script>
-
+    // 获取用户详情
+    $.ajax({
+      type: 'get',
+      url: 'http://47.111.184.55:8888/api/v1/admin/user/detail',
+      success: function (data) {
+        var html = template('userTPl', data)
+        $('#tbody').html(html)
+      }
+    })
+    // 表单提交
+    $('#tbody').on('click', '#edit', function () {
+      var formData = new FormData($('#article_form')[0])
+      $.ajax({
+        type: 'post',
+        url: 'http://47.111.184.55:8888/api/v1/admin/user/edit',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+          console.log(data);
+          location.reload()
+        }
+      })
+      return false
+    })
+    // 图片本地预览
+    $('#tbody').on('change', '#exampleInputFile', function () {
+      // 使用 this.files[0] 伪数组结合下标获取到文件
+      var files = this.files[0]
+      // 将文件使用 URL.createObjectURL 转换成 url
+      var imgUrl = URL.createObjectURL(files)
+      console.log(imgUrl);
+      // 将 生成的 url 赋值给 src
+      $('#imgbox').attr('src', imgUrl)
+      $('#exampleHiddle').val(imgUrl);
+    }) 
   </script>
 </body>
+
 </html>

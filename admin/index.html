@@ -174,7 +174,11 @@
       }
     }
   </script>
-
+<!-- 字符模板 -->
+<script type="text/html" id="userTPl">
+  <img src="{{data.userPic.replace('http://172.16.19.30:8888','http://47.111.184.55:8888')}}" alt="person">
+  <span>欢迎&nbsp;&nbsp;"{{data.username}}"</span>
+</script>
   <!-- 业务逻辑代码 -->
   <script>
     //用户展示
@@ -191,6 +195,15 @@
         $('#user_center_link').html(html2);
       }
     })
+    })
+    // 获取用户个人信息
+    $.ajax({
+      type: 'get',
+      url: 'http://47.111.184.55:8888/api/v1/admin/user/detail',
+      success: function (data) {
+        var html = template('userTPl', data)
+        $('.user_info').html(html)
+      }
     })
   </script>
 </body>
