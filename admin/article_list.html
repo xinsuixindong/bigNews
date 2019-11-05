@@ -20,11 +20,12 @@
     <div class="container-fluid common_con">
       <div class="row opt_btns">
         <div class="col-xs-6">
-          <form class="form-inline" id="filterForm">
-            <select id="selCategory" name="type" class="form-control input-sm">
-              <!-- 分类列表模板 -->
+          <form class="form-inline">
+            <select id="selCategory" name="" class="form-control input-sm">
+
+
             </select>
-            <select id="selStatus" name="state" class="form-control input-sm">
+            <select id="selStatus" name="" class="form-control input-sm">
               <option value="">所有状态</option>
               <option value="草稿">草稿</option>
               <option value="已发布">已发布</option>
@@ -48,15 +49,17 @@
             <th class="text-center" width="100">操作</th>
           </tr>
         </thead>
-        <tbody id="articleListBox">
-          <!-- 文章列表模板 -->
+        <tbody id="articleBox">
+
+
+
+
+
         </tbody>
       </table>
 
       <div class="row text-center">
-        <ul class="pagination pagination-sm" id="paginationBox">
-          <!-- 分页模板 -->
-        </ul>
+        <ul id="pagination-demo" class="pagination-sm"></ul>
       </div>
 
     </div>
@@ -65,122 +68,110 @@
   <script src="js/jquery-1.12.4.min.js"></script>
   <script src="./js/template-web.js"></script>
   <script src="./js/jquery.twbsPagination.js"></script>
-
-  <!-- 文章列表模板 -->
-  <script type="text/html" id="articleListTpl">
-    {{each data}}
+  <!-- 文章页面渲染 -->
+  <script type="text/html" id="articleTpl">
+    {{each respose}}
     <tr>
-      <td>{{$value.title}}</td>
-      <td>{{$value.author}}</td>
-      <td>{{$value.category}}</td>
-      <td class="text-center">{{$value.date}}</td>
-      <td class="text-center">{{$value.state}}</td>
-      <td class="text-center">
-        <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-        <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
-      </td>
-    </tr>
-    {{/each}}
+        <td>{{$value.title}}</td>
+        <td>{{$value.author}}</td>
+        <td>{{$value.category}}</td>
+        <td class="text-center">{{$value.date}}</td>
+        <td class="text-center">{{$value.state}}</td>
+        <td class="text-center">
+          <a href="article_edit.html?id={{$value.id}}" class="btn btn-default btn-xs emit" data-id="{{$value.id}}">编辑</a>
+          <a href="javascript:;" class="btn btn-danger btn-xs" data-id="{{$value.id}}" id="delete">删除</a>
+        </td>
+      </tr>
+      {{/each}}
   </script>
-
-  <!-- 分类列表模板 -->
-  <script type="text/html" id="classificationTpl">
-    <option value="">所有分类</option>
+  <!-- 文章页面分类渲染 -->
+  <script type="text/html" id="classTpl">
     {{each data}}
-    <option value={{$value.id}}>{{$value.name}}</option>
+    <option value="{{$value.id}}">{{$value.name}}</option>
     {{/each}}
   </script>
-
   <script>
     // 设置左侧菜单
     $('#release_btn').click(function () {
       window.parent.setMenu(1, 1);
     })
   </script>
-
   <!-- 业务逻辑代码 -->
   <script>
-    $(function () {
-     
-      function getData(myPage) {
+
+    // 删除文章
+    $('#articleBox').on('click', '#delete', function () {
+      // 获取当前的id
+      var id = $(this).attr('data-id');
+      // // 发送ajax请求
+      if (confirm('是否删除')) {
         $.ajax({
-          type: 'get',
-          url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
-          data: {
-            page: myPage, // 当前第几页
-            perpage: 5    // 每页展示条数
-          },
+          type: 'post',
+          url: 'http://47.111.184.55:8888/api/v1/admin/article/delete',
+          data: { id: id },
           success: function (data) {
-            console.log(data)
-            var html = template('articleListTpl', { data: data.data.data })
-            // console.log(html);
-            $('#articleListBox').html(html);
-            var totalPages = data.data.totalPage
-            if (myTotalPage != totalPages) {
-              myTotalPage = totalPages
-              $pagination.twbsPagination('destroy')
-              $pagination.twbsPagination($.extend({}, defaultOpts, {
-                startPage: 1,
-                totalPages: totalPages
-              }))
-            }
+            location.reload()
           }
         })
       }
-      getData(1)
-
-      var $pagination = $('#paginationBox')
-      var myTotalPage = 10
-
-      var defaultOpts = {
-        totalPages: myTotalPage,
-        visiblePages: 7,
-        first: '首页',
-        last: '末页',
-        prev: '上一页',
-        next: '下一页',
-        onPageClick: function (event, page) {
-          getData(page)
-        }
-      }
-
-      $pagination.twbsPagination(defaultOpts);
-
-
-      $('#paginationBox').twbsPagination();
-
-
-      //渲染分类列表
-      $.ajax({
-        url: 'http://47.111.184.55:8888/api/v1/admin/category/list',
-        type: 'get',
-        success: function (data) {
-          // console.log(data.data);
-          var html = template('classificationTpl', { data: data.data });
-          // console.log(html);
-          $('#selCategory').html(html);
-          // console.log(html);
-        }
-      })
-
-      //筛选文章
-      $('#filterForm').on('submit', function () {
-        var formData = $(this).serialize();
-        // console.log(formData);
-        $.ajax({
-          type: 'get',
-          url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
-          data: formData,
-          success: function (data) {
-            var html = template('articleListTpl', { data: data.data.data });
-            $('#articleListBox').html(html);
-          }
-        })
-        return false;
-      })
-
     })
+
+    //进到文章列表页面，就获取符合条件的文章封装成了一函数，然后传入数据调用这个函数
+    function getData(myPage) {
+      $.ajax({
+        type: 'get',
+        url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
+        data: {
+          page: myPage, // 当前第几页
+          perpage: 5    // 每页展示条数
+        },
+        success: function (respose) {
+          var html = template('articleTpl', { respose: respose.data.data });
+          $('#articleBox').html(html)
+          // 文章分页
+          var totalPages = respose.data.totalPage
+          if (myTotalPage != totalPages) {
+            myTotalPage = totalPages
+            $pagination.twbsPagination('destroy')
+            $pagination.twbsPagination($.extend({}, defaultOpts, {
+              startPage: 1,
+              totalPages: totalPages
+            }))
+          }
+          // 渲染文章类别
+          $.ajax({
+            url: 'http://47.111.184.55:8888/api/v1/admin/category/list',
+            type: 'get',
+            success: function (data) {
+              console.log(data);
+              
+              var html = template('classTpl', data)
+              $('#selCategory').html(html)
+            }
+          })
+        }
+      })
+    }
+
+    getData(1)
+    // 分类插件
+    var $pagination = $('#pagination-demo')
+    var myTotalPage = 10
+    var defaultOpts = {
+      totalPages: myTotalPage,
+      visiblePages: 7,
+      first: '首页',
+      last: '末页',
+      prev: '上一页',
+      next: '下一页',
+      onPageClick: function (event, page) {
+        getData(page)
+      }
+    }
+    $pagination.twbsPagination(defaultOpts);
+    $('#pagination-demo').twbsPagination();
   </script>
+
 </body>
 
 </html>
