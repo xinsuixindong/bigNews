@@ -10,23 +10,23 @@ $.ajax({
     }
 })
 
-// 最新评论
+
 $.ajax({
     type:'get',
     url:'http://47.111.184.55:8888/api/v1/index/latest_comment',
-    success:function(data){  
-        // console.log(data);
-        var html = template('newsTpl', {data : data.data});
-        // console.log(html);  
-		$('#newsBox').html(html);
-    }
-})
+    success:function(data){                  
+            
+            var html = template('newsTpl', {data : data.data});
+            // console.log(html);  
+		    $('#newsBox').html(html);
+        }
+    })
 // 焦点
 $.ajax({
     type:'get',
     url:'http://47.111.184.55:8888/api/v1/index/attention',
     success:function(data){  
-        // console.log(data);
+        console.log(data);
         var html = template('focusTpl', {data : data.data});
         // console.log(html);  
 		$('#focusBox').html(html);
@@ -37,10 +37,11 @@ $.ajax({
     type:'get',
     url:'http://47.111.184.55:8888/api/v1/index/category?list=5',
     success:function(data){  
-        console.log(data);
+        // console.log(data);
         var html = template('classifyTpl', {data : data.data});
         // console.log(html);  
         $('#classify2').html(html);
         $('#classify').html(html);
     }
 })
+
