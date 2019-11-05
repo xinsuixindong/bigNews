@@ -19,29 +19,26 @@
       写文章
     </div>
     <div class="container-fluid common_con">
-      <form class="form-horizontal article_form">
+      <form class="form-horizontal article_form" id="release">
         <div class="form-group">
           <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
           <div class="col-sm-10">
-            <input type="email" name="title" class="form-control" id="inputEmail3" placeholder="文章标题">
+            <input type="text" name="title" class="form-control" id="inputEmail3" placeholder="文章标题">
           </div>
         </div>
         <div class="form-group">
           <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
           <div class="col-sm-10">
-            <img src="./images/2.jpg" style="height:120px;" alt="">
+            <img src="./images/2.jpg" style="height:120px;" alt="" class="image">
             <input type="file" name="cover" id="exampleInputFile">
+            <input type="hidden" name="cover" id="example">
           </div>
         </div>
         <div class="form-group">
           <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
           <div class="col-sm-4">
             <select class="form-control" name="categoryId" id="article_category">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
+
             </select>
           </div>
         </div>
@@ -52,7 +49,8 @@
             <div class="input-group">
               <input type="text" name="date" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button" onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
+                <button class="btn btn-default" type="button"
+                  onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
                     class="iconfont icon-icondate"></i></button>
               </span>
             </div>
@@ -82,10 +80,60 @@
   <script src="js/tinymce/js/tinymce_setup.js"></script>
   <script src="./js/moment.js"></script>
   <script src="./js/template-web.js"></script>
-  
+  <!-- 文章类别模板拼接 -->
+  <script type="text/html" id="classTpl">
+    {{each data}}
+    <option value="{{$value.id}}">{{$value.name}}</option>
+    {{/each}}
+  </script>
+
   <!-- 业务逻辑代码 -->
   <script>
-    
+    // 获取文章类别
+    $.ajax({
+      url: 'http://47.111.184.55:8888/api/v1/admin/category/list',
+      type: 'get',
+      success: function (data) {
+        var html = template('classTpl', data)
+        $('#article_category').html(html)
+      }
+    })
+
+    // 图片预览
+    document.querySelector('#exampleInputFile').onchange = function () {
+      // 使用 this.files[0] 伪数组结合下标获取到文件
+      var files = this.files[0]
+      // 将文件使用 URL.createObjectURL 转换成 url
+      var imgUrl = URL.createObjectURL(files)
+      // 将 生成的 url 赋值给 src
+      document.querySelector('.image').src = imgUrl
+      // 地址给隐藏域
+      $('#example').val(imgUrl)
+    }
+    // 文章上传
+    $('#release').on('submit', function () {
+      // 创建formData对象
+      var fd = new FormData($('form')[0]);
+      // 追加到对象里面
+      fd.append('content', tinyMCE.activeEditor.getContent());
+      // 文章状态为已发布也要追加到formData
+      fd.append('state', '已发布');
+      // fd.forEach((value, key) => {
+      //   console.log(key, value);
+      // })
+      // 发送ajax请求
+      $.ajax({
+        url: 'http://47.111.184.55:8888/api/v1/admin/article/publish',
+        type: 'post',
+        data: fd,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+          location.href = 'article_list.html'
+        }
+      })
+      return false
+    })
   </script>
 </body>
 
