@@ -16,8 +16,7 @@
   <div class="sider">
     <a href="#" class="logo"><img src="images/logo02.png" alt="logo"></a>
     <div class="user_info">
-      <img src="images/2.jpg" alt="person">
-      <span>欢迎&nbsp;&nbsp;李思思</span>
+     
       <b>管理员</b>
     </div>
     <div class="menu">
@@ -112,6 +111,7 @@
 
   <script src="js/jquery-1.12.4.min.js"></script>
   <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+  <script src="js/template-web.js"></script>
   <script>
     var $level01 = $('.level01');
     var $subli = $('.level02 li')
@@ -163,10 +163,22 @@
       }
     }
   </script>
-
+<!-- 字符模板 -->
+<script type="text/html" id="userTPl">
+  <img src="{{data.userPic.replace('http://172.16.19.30:8888','http://47.111.184.55:8888')}}" alt="person">
+  <span>欢迎&nbsp;&nbsp;"{{data.username}}"</span>
+</script>
   <!-- 业务逻辑代码 -->
   <script>
-
+    // 获取用户个人信息
+    $.ajax({
+      type: 'get',
+      url: 'http://47.111.184.55:8888/api/v1/admin/user/detail',
+      success: function (data) {
+        var html = template('userTPl', data)
+        $('.user_info').html(html)
+      }
+    })
   </script>
 </body>
 
