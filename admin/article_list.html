@@ -20,12 +20,12 @@
     <div class="container-fluid common_con">
       <div class="row opt_btns">
         <div class="col-xs-6">
-          <form class="form-inline">
-            <select id="selCategory" name="" class="form-control input-sm">
+          <form class="form-inline" id="filterForm">
+            <select id="selCategory" name="type" class="form-control input-sm">
 
 
             </select>
-            <select id="selStatus" name="" class="form-control input-sm">
+            <select id="selStatus" name="state" class="form-control input-sm">
               <option value="">所有状态</option>
               <option value="草稿">草稿</option>
               <option value="已发布">已发布</option>
@@ -81,11 +81,12 @@
           <a href="article_edit.html?id={{$value.id}}" class="btn btn-default btn-xs emit" data-id="{{$value.id}}">编辑</a>
           <a href="javascript:;" class="btn btn-danger btn-xs" data-id="{{$value.id}}" id="delete">删除</a>
         </td>
-      </tr>
-      {{/each}}
+    </tr>
+    {{/each}}
   </script>
   <!-- 文章页面分类渲染 -->
   <script type="text/html" id="classTpl">
+    <option value="">所有分类</option>
     {{each data}}
     <option value="{{$value.id}}">{{$value.name}}</option>
     {{/each}}
@@ -98,6 +99,26 @@
   </script>
   <!-- 业务逻辑代码 -->
   <script>
+
+     //筛选文章
+     $('#filterForm').on('submit', function () {
+      //  console.log(1111);
+        var formData = $(this).serialize();
+        // console.log(formData);
+        $.ajax({
+          type: 'get',
+          url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
+          data: formData,
+          success: function (data) {
+            var html = template('articleTpl', { respose: data.data.data });
+            console.log(html);
+            
+            $('#articleBox').html(html);
+          }
+        })
+        return false;
+      })
+
 
     // 删除文章
     $('#articleBox').on('click', '#delete', function () {
@@ -123,7 +144,7 @@
         url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
         data: {
           page: myPage, // 当前第几页
-          perpage: 5    // 每页展示条数
+          perpage: 1000    // 每页展示条数
         },
         success: function (respose) {
           var html = template('articleTpl', { respose: respose.data.data });
@@ -143,7 +164,7 @@
             url: 'http://47.111.184.55:8888/api/v1/admin/category/list',
             type: 'get',
             success: function (data) {
-              console.log(data);
+              // console.log(data);
               
               var html = template('classTpl', data)
               $('#selCategory').html(html)
