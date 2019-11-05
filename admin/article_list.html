@@ -144,7 +144,7 @@
         url: 'http://47.111.184.55:8888/api/v1/admin/article/query',
         data: {
           page: myPage, // 当前第几页
-          perpage: 1000    // 每页展示条数
+          perpage: 10    // 每页展示条数
         },
         success: function (respose) {
           var html = template('articleTpl', { respose: respose.data.data });

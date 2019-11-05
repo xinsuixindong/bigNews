@@ -67,7 +67,7 @@
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-success btn-release">发布</button>
-            <button type="submit" class="btn btn-default">存为草稿</button>
+            <button type="submit" class="btn btn-default" onclick="c()">存为草稿</button>
           </div>
         </div>
       </form>
@@ -111,13 +111,17 @@
       $('#example').val(imgUrl)
     }
     // 文章上传
+    var status = '已发布'
+    function c(){
+      return status = '草稿'
+    }
     $('#release').on('submit', function () {
       // 创建formData对象
       var fd = new FormData($('form')[0]);
       // 追加到对象里面
       fd.append('content', tinyMCE.activeEditor.getContent());
       // 文章状态为已发布也要追加到formData
-      fd.append('state', '已发布');
+      fd.append('state', status);
       // fd.forEach((value, key) => {
       //   console.log(key, value);
       // })
